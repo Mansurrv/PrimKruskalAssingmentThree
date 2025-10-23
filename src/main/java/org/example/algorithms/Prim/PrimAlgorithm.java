@@ -1,13 +1,36 @@
 package org.example.algorithms.Prim;
 
+import com.google.gson.Gson;
+
+import java.io.FileReader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class PrimAlgorithm {
-    int minKey(int key[], Boolean set[]){
+    static class Edge{
+        String from;
+        String to;
+        int weight;
+    }
+
+    static class Graph{
+        int id;
+        String[] nodes;
+        List<Edge> edges;
+    }
+
+    static class GraphsWrapper{
+        List<Graph> graphs;
+    }
+
+    int min(int[] key, Boolean[] set) {
         int min = Integer.MAX_VALUE;
         int min_idx = -1;
         int len = set.length;
 
-        for(int i=0; i<len; i++){
-            if (set[i]==false && key[i]<min){
+        for(int i=0; i<len; i++) {
+            if(!set[i] && key[i]<min){
                 min = key[i];
                 min_idx = i;
             }
@@ -16,51 +39,78 @@ public class PrimAlgorithm {
     }
 
 
-    void print(int parent[], int graph[][]){
+    void print(int[] parent, int[][] graph, String[] nodes){
         System.out.println("Edge \tWeight");
-        for(int i=1; i<graph.length; i++){
-            System.out.println(parent[i] + " - " + i + "\t" + graph[parent[i]][i]);
+        int len = graph.length;
+        for(int i=0; i<len; i++){
+            if(parent[i] != -1) System.out.println(nodes[parent[i]] + " - " + nodes[i] + "\t" + graph[parent[i]][i]);
         }
     }
 
 
-    void prim(int graph[][]){
+    void MST(int[][] graph, String[] nodes){
         int V = graph.length;
-        int parent[] = new int[V];
-        int key[] = new int[V];
-        Boolean set[] = new Boolean[V];
+        int[] parent  = new int[V];
+        int[] key     = new int[V];
+        Boolean[] set = new Boolean[V];
 
         for(int i=0; i<V; i++){
             key[i] = Integer.MAX_VALUE;
             set[i] = false;
         }
 
-        key[0]=0;
-        parent[0]=-1;
+        key[0] = 0;
+        parent[0] = -1;
 
-        for(int count=0; count<V-1; count++){
-            int u = minKey(key,set);
+        for(int count=0; count<V; count++){
+            int u  = min(key, set);
             set[u] = true;
+
             for(int v=0; v<V; v++){
-                if(graph[u][v]!=0 && set[v]==false && graph[u][v]<key[v]){
-                    parent[v]=u;
-                    key[v]=graph[u][v];
+                if(graph[u][v]!=0 && !set[v] && graph[u][v]<key[v]){
+                    parent[v] = u;
+                    key[v] = graph[u][v];
                 }
             }
         }
-        print(parent, graph);
+        print(parent, graph, nodes);
     }
 
 
-    public static  void main(String[] args) {
-        PrimAlgorithm algorithm = new PrimAlgorithm();
-        int graph[][] = new int[][] {
-                { 0, 2, 0, 6, 0 },
-                { 2, 0, 3, 8, 5 },
-                { 0, 3, 0, 0, 7 },
-                { 6, 8, 0, 0, 9 },
-                { 0, 5, 7, 9, 0 }
-        };
-        algorithm.prim(graph);
+    static int[][] buildAdjacencyMatrix(String[] nodes, List<Edge> edges){
+        int n                       = nodes.length;
+        int[][] mtrx                = new int[n][n];
+        Map<String,Integer> idx_map = new HashMap<>();
+        for(int i=0; i<n; i++){
+            idx_map.put(nodes[i], i);
+        }
+
+        for(Edge e:edges){
+            int from = idx_map.get(e.from);
+            int to   = idx_map.get(e.to);
+            mtrx[from][to] = e.weight;
+            mtrx[to][from] = e.weight;
+        }
+        return mtrx;
+    }
+
+
+    public static void main(String[] args) {
+        try{
+            Gson json = new Gson();
+            FileReader read = new FileReader("ass_3_input.json");
+            GraphsWrapper data = json.fromJson(read, GraphsWrapper.class);
+            PrimAlgorithm alg = new PrimAlgorithm();
+
+            for(Graph graph:data.graphs){
+                System.out.println(
+                        "\nGraph " + graph.id + "MST: "
+                );
+                int[][] mtrx = buildAdjacencyMatrix(graph.nodes, graph.edges);
+                alg.MST(mtrx, graph.nodes);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
