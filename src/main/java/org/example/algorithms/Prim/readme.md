@@ -26,3 +26,13 @@ Add the chosen edge to the minimum spanning tree. Since we consider only the edg
 Step 6:
 Return the minimum spanning tree and exit.
 
+### Time complexity: O(V^2)
+
+As we using adjacency matrix, if the input graph is represented using an adjacency list, then the time complexity of Prim's algorithm can be reduced to O((E+V) * logV) with the help of a binary heap.
+
+### Auxiliary space: O(V)
+
+## Optimized implementation using adjacency list representation and priority queue
+
+At first we transform the adjacency matrix into adjacency list using ArrayList. Then we create a pair class to store the vertex and its weight. We sort the list on the basis of lowest weight as well. And then we create priority queue and push the first vertex and its weight in the queue. Then we just traverse through its edges and store the least weight in a variable called ans. At last after all the vertex we return the ans.
+
