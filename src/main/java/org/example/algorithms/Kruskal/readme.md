@@ -10,3 +10,10 @@ At first we going to sort all the edges in a non-decreasing order of their weigh
 
 ! Kruskal's algorithm is use disjoint set of data to detect cycles.
 
+### Time complexity of baseline Kruskal's algorithm:
+
+O(E * logE) or O(E * logV)
+
+#### Explanation:
+
+Sorting of edges takes O(E * logE) time. After sorting, we iterate through all edges and apply find-union algorithm. The find-union operations at least takes O(logE) or O(logV) time. So overall the complexity is O(E*logE + E*logV). The value E can be at most O(V^2) so that means O(logE) and O(logV) same. Therefore the overall time complexity is O(E * logE) or O(E * logV).
