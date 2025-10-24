@@ -74,4 +74,25 @@ public class PrimAlgorithmTest {
         PrimAlgorithm.PrimResult result = createSmallGraphResult();
         assertTrue(result.execution_time_ms >= 0, "Execution time must be non-negative");
     }
+
+
+    @Test
+    void testExecutionTimeNonNegative() {
+        PrimAlgorithm.PrimResult result = createSmallGraphResult();
+        assertTrue(result.execution_time_ms >= 0, "Execution time must be non-negative");
+    }
+    @Test
+    void testOperationsNonNegative() {
+        PrimAlgorithm.PrimResult result = createSmallGraphResult();
+        assertTrue(result.operations_count >= 0, "Operation count must be non-negative");
+    }
+    @Test
+    void testReproducibility() {
+        PrimAlgorithm.PrimResult firstRun = createSmallGraphResult();
+        PrimAlgorithm.PrimResult secondRun = createSmallGraphResult();
+
+        assertEquals(firstRun.total_cost, secondRun.total_cost, "MST total cost must be identical across runs");
+        assertEquals(firstRun.mst_edges.size(), secondRun.mst_edges.size(), "Number of MST edges must be identical");
+        assertEquals(firstRun.operations_count, secondRun.operations_count, "Operation count should be consistent");
+    }
 }
