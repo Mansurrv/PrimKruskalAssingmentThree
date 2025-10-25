@@ -153,12 +153,12 @@ public class KruskalAlgorithm {
 
         output.add("results", resultsArray);
 
-        try (FileWriter writer = new FileWriter("results/result.json")) {
+        try (FileWriter writer = new FileWriter("results/Kruskal/result.json")) {
             gson.toJson(output, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println("Results saved to all_results.json");
+        System.out.println("Results saved");
     }
 }
