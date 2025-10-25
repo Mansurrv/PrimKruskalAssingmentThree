@@ -2,6 +2,7 @@ package org.example.algorithms.Prim;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.*;
@@ -56,76 +57,70 @@ public class PrimAlgorithmOptimized {
     static class ResultWrapper {
         int graph_id;
         InputStats input_stats;
-        PrimResult prim_optimized;
+        PrimResult prim;
     }
 
     static class Output {
         List<ResultWrapper> results = new ArrayList<>();
     }
 
-    static class Pair implements Comparable<Pair> {
-        int v, wt, parent;
-        Pair(int v, int wt, int parent) {
-            this.v = v;
-            this.wt = wt;
-            this.parent = parent;
+    int min(int[] key, Boolean[] set, int[] operations) {
+        int min = Integer.MAX_VALUE;
+        int min_idx = -1;
+        int len = set.length;
+
+        for (int i = 0; i < len; i++) {
+            operations[0]++;
+            if (!set[i] && key[i] < min) {
+                min = key[i];
+                min_idx = i;
+            }
         }
-        public int compareTo(Pair that) {
-            return this.wt - that.wt;
-        }
+        return min_idx;
     }
 
-    PrimResult primOptimized(List<Node> nodes, List<Edge> edges) {
+    PrimResult MST(int[][] graph, List<Node> nodes) {
         long startTime = System.nanoTime();
 
-        int V = nodes.size();
-        ArrayList<ArrayList<Pair>> adj = new ArrayList<>();
-        for (int i = 0; i < V; i++) adj.add(new ArrayList<>());
+        int V = graph.length;
+        int[] parent = new int[V];
+        int[] key = new int[V];
+        Boolean[] set = new Boolean[V];
+        int[] operations = {0};
 
-        Map<Integer, Integer> idToIndex = new HashMap<>();
-        for (int i = 0; i < nodes.size(); i++) {
-            idToIndex.put(nodes.get(i).id, i);
+        for (int i = 0; i < V; i++) {
+            key[i] = Integer.MAX_VALUE;
+            set[i] = false;
+            operations[0]++;
         }
 
-        for (Edge e : edges) {
-            Integer from = idToIndex.get(e.source);
-            Integer to = idToIndex.get(e.target);
-            if (from == null || to == null) continue; // skip invalid references
-            adj.get(from).add(new Pair(to, e.weight, from));
-            adj.get(to).add(new Pair(from, e.weight, to));
+        key[0] = 0;
+        parent[0] = -1;
+
+        for (int count = 0; count < V - 1; count++) {
+            int u = min(key, set, operations);
+            set[u] = true;
+
+            for (int v = 0; v < V; v++) {
+                operations[0]++;
+                if (graph[u][v] != 0 && !set[v] && graph[u][v] < key[v]) {
+                    parent[v] = u;
+                    key[v] = graph[u][v];
+                }
+            }
         }
-
-
-        PriorityQueue<Pair> pq = new PriorityQueue<>();
-        boolean[] vis = new boolean[V];
-        pq.add(new Pair(0, 0, -1));
 
         int totalCost = 0;
-        int operations = 0;
         List<MSTEdge> mstEdges = new ArrayList<>();
+        for (int i = 1; i < V; i++) {
+            if (parent[i] != -1) {
+                int weight = graph[parent[i]][i];
+                totalCost += weight;
 
-        while (!pq.isEmpty()) {
-            Pair cur = pq.poll();
-            int node = cur.v;
-            int wt = cur.wt;
-            int parent = cur.parent;
-            operations++;
+                String from = nodes.get(parent[i]).label != null ? nodes.get(parent[i]).label : String.valueOf(parent[i]);
+                String to = nodes.get(i).label != null ? nodes.get(i).label : String.valueOf(i);
 
-            if (vis[node]) continue;
-            vis[node] = true;
-            totalCost += wt;
-
-            if (parent != -1) {
-                String from = nodes.get(parent).label != null ? nodes.get(parent).label : String.valueOf(parent);
-                String to = nodes.get(node).label != null ? nodes.get(node).label : String.valueOf(node);
-                mstEdges.add(new MSTEdge(from, to, wt));
-            }
-
-            for (Pair nei : adj.get(node)) {
-                if (!vis[nei.v]) {
-                    pq.add(new Pair(nei.v, nei.wt, node));
-                    operations++;
-                }
+                mstEdges.add(new MSTEdge(from, to, weight));
             }
         }
 
@@ -135,9 +130,58 @@ public class PrimAlgorithmOptimized {
         PrimResult result = new PrimResult();
         result.mst_edges = mstEdges;
         result.total_cost = totalCost;
-        result.operations_count = operations;
+        result.operations_count = operations[0];
         result.execution_time_ms = execTimeMs;
+
         return result;
+    }
+
+    static int[][] buildAdjacencyMatrix(List<Node> nodes, List<Edge> edges) {
+        int n = nodes.size();
+        int[][] matrix = new int[n][n];
+        Map<Integer, Integer> indexMap = new HashMap<>();
+
+        for (int i = 0; i < n; i++) {
+            indexMap.put(nodes.get(i).id, i);
+        }
+
+        for (Edge e : edges) {
+            int from = indexMap.get(e.source);
+            int to = indexMap.get(e.target);
+            matrix[from][to] = e.weight;
+            matrix[to][from] = e.weight;
+        }
+
+        return matrix;
+    }
+
+    static void processGraphs(String folderPath, String filePrefix, int startId, int endId,
+                              PrimAlgorithmOptimized algorithm, Gson gson, Output output) {
+        for (int graphId = startId; graphId <= endId; graphId++) {
+            try {
+                String path = folderPath + "/" + filePrefix + "_" + graphId + ".json";
+                FileReader reader = new FileReader(path);
+                Root root = gson.fromJson(reader, Root.class);
+
+                int[][] matrix = buildAdjacencyMatrix(root.graph.nodes, root.graph.edges);
+                PrimResult primResult = algorithm.MST(matrix, root.graph.nodes);
+
+                InputStats stats = new InputStats();
+                stats.vertices = root.graph.nodes.size();
+                stats.edges = root.graph.edges.size();
+
+                ResultWrapper wrapper = new ResultWrapper();
+                wrapper.graph_id = graphId;
+                wrapper.input_stats = stats;
+                wrapper.prim = primResult;
+
+                output.results.add(wrapper);
+                reader.close();
+
+            } catch (Exception e) {
+                System.err.println("Failed to read or process");
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -146,43 +190,22 @@ public class PrimAlgorithmOptimized {
             Output output = new Output();
             PrimAlgorithmOptimized algorithm = new PrimAlgorithmOptimized();
 
-            int[][] ranges = {
-                    {1, 5},
-                    {6, 15},
-                    {16, 25},
-                    {26, 28}
-            };
-            String[] folders = {"small", "medium", "large", "extralarge"};
-            String[] prefixes = {"smallGraph_", "medium_", "large_", "extraLarge_"};
+            processGraphs("graphs/small", "smallGraph", 1, 5, algorithm, gson, output);
+            processGraphs("graphs/medium", "medium", 6, 15, algorithm, gson, output);
+            processGraphs("graphs/large", "large", 16, 25, algorithm, gson, output);
+            processGraphs("graphs/extralarge", "extraLarge", 26, 28, algorithm, gson, output);
 
-            for (int i = 0; i < ranges.length; i++) {
-                for (int graphId = ranges[i][0]; graphId <= ranges[i][1]; graphId++) {
-                    String path = "graphs/" + folders[i] + "/" + prefixes[i] + graphId + ".json";
-                    try (FileReader reader = new FileReader(path)) {
-                        Root root = gson.fromJson(reader, Root.class);
-
-                        PrimResult primResult = algorithm.primOptimized(root.graph.nodes, root.graph.edges);
-
-                        InputStats stats = new InputStats();
-                        stats.vertices = root.graph.nodes.size();
-                        stats.edges = root.graph.edges.size();
-
-                        ResultWrapper wrapper = new ResultWrapper();
-                        wrapper.graph_id = graphId;
-                        wrapper.input_stats = stats;
-                        wrapper.prim_optimized = primResult;
-
-                        output.results.add(wrapper);
-                    }
-                }
+            File resultsDir = new File("results");
+            if (!resultsDir.exists()) {
+                resultsDir.mkdirs();
             }
 
-            String outputPath = "results/Prim/prim_optimized_all_results.json";
-            try (FileWriter writer = new FileWriter(outputPath)) {
-                gson.toJson(output, writer);
-            }
+            String outputPath = "results/Prim/primOptimized.json";
+            FileWriter writer = new FileWriter(outputPath);
+            gson.toJson(output, writer);
+            writer.close();
 
-            System.out.println("\nAll results saved");
+            System.out.println("Results saved");
 
         } catch (Exception e) {
             e.printStackTrace();
