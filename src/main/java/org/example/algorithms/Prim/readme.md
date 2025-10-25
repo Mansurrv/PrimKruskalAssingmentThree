@@ -20,5 +20,3 @@ As we using adjacency matrix, if the input graph is represented using an adjacen
 
 At first we transform the adjacency matrix into adjacency list using ArrayList. Then we create a pair class to store the vertex and its weight. We sort the list on the basis of lowest weight as well. And then we create priority queue and push the first vertex and its weight in the queue. Then we just traverse through its edges and store the least weight in a variable called ans. At last after all the vertex we return the ans.
 
-
-
