@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PrimAlgorithmTest {
+public class PrimAlgorithmOptimizedTest {
     private PrimAlgorithmOptimized.PrimResult createSmallGraphResult() {
         PrimAlgorithmOptimized.Node n1 = new PrimAlgorithmOptimized.Node(); n1.id = 1;
         PrimAlgorithmOptimized.Node n2 = new PrimAlgorithmOptimized.Node(); n2.id = 2;
