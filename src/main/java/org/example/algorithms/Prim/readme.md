@@ -8,23 +8,7 @@ A group of edges that connects two sets of vertices in a graph is called articul
 
 ## What we do? step-by-step
 
-Step 1: 
-Determine an arbitrary vertex as the starting vertex of the minimum spanning tree. We pick 0 in the below diagram.
-
-Step 2:
-Follow steps 3 to 5 till there are vertices that are not included in the minimum spanning tree.
-
-Step 3:
-Find edges connecting any tree vertex with the fringe vertices.
-
-Step 4:
-Find the minimum among these edges.
-
-Step 5:
-Add the chosen edge to the minimum spanning tree. Since we consider only the edges that connect fringe vertices with the rest, we never get a cycle.
-
-Step 6:
-Return the minimum spanning tree and exit.
+At first we must determine an arbitrary vertex as the starting vertex of the minimum spanning tree. We pick 0 in the below diagram. And then follow steps 3 to 5 till there are vertices that are not included in the minimum spanning tree. Further, find edges connecting any tree vertex with the fringe vertices and find the minimum among these edges as well. And add the chosen edge to the minimum spanning tree. Since we consider only the edges that connect fringe vertices with the rest, we never get a cycle. Finally return the minimum spanning tree and exit.
 
 ### Time complexity: O(V^2)
 
