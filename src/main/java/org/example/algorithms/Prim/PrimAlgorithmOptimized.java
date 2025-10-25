@@ -177,7 +177,7 @@ public class PrimAlgorithmOptimized {
                 }
             }
 
-            String outputPath = "results/prim_optimized_all_results.json";
+            String outputPath = "results/Prim/prim_optimized_all_results.json";
             try (FileWriter writer = new FileWriter(outputPath)) {
                 gson.toJson(output, writer);
             }

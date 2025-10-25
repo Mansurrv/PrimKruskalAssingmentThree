@@ -200,7 +200,7 @@ public class PrimAlgorithm {
                 resultsDir.mkdirs();
             }
 
-            String outputPath = "results/prim_all_results.json";
+            String outputPath = "results/Prim/prim_all_results.json";
             FileWriter writer = new FileWriter(outputPath);
             gson.toJson(output, writer);
             writer.close();
