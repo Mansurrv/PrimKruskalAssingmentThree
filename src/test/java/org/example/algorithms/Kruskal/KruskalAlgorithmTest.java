@@ -1,23 +1,26 @@
 package org.example.algorithms.Kruskal;
+
 import com.google.gson.Gson;
+import org.example.algorithms.Kruskal.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 public class KruskalAlgorithmTest {
-    private KruskalAlgorithm.GraphData sampleGraph;
+
+    private GraphData sampleGraph;
     private Gson gson;
 
     @BeforeEach
     void setUp() {
         gson = new Gson();
 
-        sampleGraph = new KruskalAlgorithm.GraphData();
+        sampleGraph = new GraphData();
         sampleGraph.nodes = new ArrayList<>();
         for (int i = 1; i <= 4; i++) {
-            KruskalAlgorithm.Node n = new KruskalAlgorithm.Node();
+            Node n = new Node();
             n.id = i;
             sampleGraph.nodes.add(n);
         }
@@ -29,39 +32,41 @@ public class KruskalAlgorithmTest {
         sampleGraph.edges.add(makeEdge(3, 4, 15));
     }
 
-    private KruskalAlgorithm.Edge makeEdge(int s, int t, int w) {
-        KruskalAlgorithm.Edge e = new KruskalAlgorithm.Edge();
+    private Edge makeEdge(int s, int t, int w) {
+        Edge e = new Edge();
         e.source = s;
         e.target = t;
         e.weight = w;
         return e;
     }
 
-
     @Test
     void testMSTHasCorrectNumberOfEdges() {
         int V = sampleGraph.nodes.size();
-        List<KruskalAlgorithm.Edge> mst = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
+        List<Edge> mst = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
         assertEquals(V - 1, mst.size());
     }
+
     @Test
     void testMSTIsAcyclic() {
         int V = sampleGraph.nodes.size();
-        List<KruskalAlgorithm.Edge> mst = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
-        KruskalAlgorithm.DSU dsu = new KruskalAlgorithm.DSU(V);
-        for (KruskalAlgorithm.Edge e : mst) {
+        List<Edge> mst = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
+        DSU dsu = new DSU(V);
+
+        for (Edge e : mst) {
             int u = e.source - 1, v = e.target - 1;
             assertNotEquals(dsu.find(u), dsu.find(v));
             dsu.union(u, v);
         }
     }
+
     @Test
     void testMSTConnectsAllVertices() {
         int V = sampleGraph.nodes.size();
-        List<KruskalAlgorithm.Edge> mst = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
+        List<Edge> mst = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
 
-        KruskalAlgorithm.DSU dsu = new KruskalAlgorithm.DSU(V);
-        for (KruskalAlgorithm.Edge e : mst) {
+        DSU dsu = new DSU(V);
+        for (Edge e : mst) {
             dsu.union(e.source - 1, e.target - 1);
         }
 
@@ -70,30 +75,30 @@ public class KruskalAlgorithmTest {
             assertEquals(root, dsu.find(i));
         }
     }
+
     @Test
     void testDisconnectedGraphHandledGracefully() {
-        KruskalAlgorithm.GraphData g = new KruskalAlgorithm.GraphData();
+        GraphData g = new GraphData();
         g.nodes = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
-            KruskalAlgorithm.Node n = new KruskalAlgorithm.Node();
+            Node n = new Node();
             n.id = i;
             g.nodes.add(n);
         }
 
         g.edges = new ArrayList<>();
-        List<KruskalAlgorithm.Edge> mst = KruskalAlgorithm.kruskalMST(g.nodes.size(), g.edges);
+        List<Edge> mst = KruskalAlgorithm.kruskalMST(g.nodes.size(), g.edges);
         assertTrue(mst.isEmpty());
     }
+
     @Test
     void testTotalCostMatchesKnownValue() {
         int V = sampleGraph.nodes.size();
-        List<KruskalAlgorithm.Edge> mst = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
+        List<Edge> mst = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
 
         int total = mst.stream().mapToInt(e -> e.weight).sum();
         assertEquals(26, total);
     }
-
-
 
     @Test
     void testExecutionTimeNonNegative() {
@@ -104,11 +109,12 @@ public class KruskalAlgorithmTest {
         double ms = (end - start) / 1_000_000.0;
         assertTrue(ms >= 0);
     }
+
     @Test
     void testResultsAreReproducible() {
         int V = sampleGraph.nodes.size();
-        List<KruskalAlgorithm.Edge> mst1 = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
-        List<KruskalAlgorithm.Edge> mst2 = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
+        List<Edge> mst1 = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
+        List<Edge> mst2 = KruskalAlgorithm.kruskalMST(V, sampleGraph.edges);
 
         assertEquals(mst1.size(), mst2.size());
 
@@ -117,9 +123,9 @@ public class KruskalAlgorithmTest {
 
         assertEquals(cost1, cost2);
     }
+
     @Test
     void testOperationCountConsistency() {
-        // For your Kruskal, approximate ops = edges.size() * 2
         int ops = sampleGraph.edges.size() * 2;
         assertTrue(ops >= 0);
     }
