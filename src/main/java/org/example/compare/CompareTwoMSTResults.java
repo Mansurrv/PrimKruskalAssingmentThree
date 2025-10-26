@@ -6,44 +6,6 @@ import java.io.*;
 import java.util.*;
 
 public class CompareTwoMSTResults {
-
-    static class InputStats {
-        int vertices;
-        int edges;
-    }
-
-    static class MSTEdge {
-        String from;
-        String to;
-        double weight;
-    }
-
-    static class MSTData {
-        @SerializedName("mst_edges")
-        List<MSTEdge> mstEdges;
-        @SerializedName("total_cost")
-        double totalCost;
-        @SerializedName("execution_time_ms")
-        double executionTime;
-        @SerializedName("operations_count")
-        int operationsCount;
-    }
-
-    static class GraphResult {
-        @SerializedName("graph_id")
-        int graphId;
-        @SerializedName("input_stats")
-        InputStats inputStats;
-        MSTData kruskal;
-        MSTData prim;
-        @SerializedName("prim_optimized")
-        MSTData primOptimized;
-    }
-
-    static class Root {
-        List<GraphResult> results;
-    }
-
     public static void main(String[] args) {
         String kruskalPath = "results/Kruskal/result.json";
         String primPath = "results/Prim/primBaseline.json";
