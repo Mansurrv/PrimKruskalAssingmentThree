@@ -132,4 +132,11 @@ Based on this experimental data, Prim's algorithm is the clear winner in terms o
 
 The primary reason for Kruskal's poorer performance is the O(ElogE) initial cost associated with sorting all edges, which is a major bottleneck that prim's algorithm avoids by using a priority queue to dynamically manage only the frontier of the minimum spanning tree.
 
+## References
+
+- https://fiveable.me/introduction-algorithms/unit-9/comparison-analysis-kruskals-prims-algorithms/study-guide/0hrf9qkRrgIgAGOS
+- https://ppml.dev/algorithms.html
+- https://fiveable.me/introduction-algorithms/unit-9/prims-algorithm-implementation/study-guide/sQKpoWORnTzBuzUg
+- https://www.cv-foundation.org/openaccess/content_iccv_2013/papers/Manen_Prime_Object_Proposals_2013_ICCV_paper.pdf
+- https://funaab.edu.ng/funaab-ocw/publications-abstract/Prim%20Algorithm%20Approach%20to%20Improving%20Local%20Access%20Network%20in%20Rural%20Areas.PDF
 
