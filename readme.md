@@ -100,3 +100,36 @@ Designing Local Area Networks where the goal is to connect all nodes with the fe
 
 Determining the minimum total distance of new roads or railway tracks required to link a set of towns or hubs.
 
+## Data Summary of comparisons
+
+The dataset includes runtime metrics across 28 graphs, ranging from small, sparse graphs to very large, dense graphs. 
+
+The key performance indicators analyzed are:
+- Number of vertices 
+- Number of edges
+- Kruskal's execution time
+- Optimized prim's execution time
+- Ratio of kruskal's and prim's time `(T_kruskal/T_prim)`
+
+### Time complexity alignment
+
+Kruskal's - O(ElogE) <br>
+Prim's - O((E+V)logV)
+
+For the type of graphs tested, the O(ElogV) factor in Prim's optimized complexity often proves more efficient than the O(ElogE) factor dominated by the initial sort in Kruskal's.
+
+### Execution time
+
+Prim's optimized algorithm consistently outperforms Kruskal's across all graph sizes tested. As the number of edges increases, the time complexity advantage of Prim's becomes dramatically evident. For the largest graph (E = 1.4 million), Kruskal's algorithm takes over 17 times longer to execute than prim's. 
+
+### Performance ratio 
+
+The ratio of Kruskal's time to Prim's time provides a clear measure of their relative inefficiency. A ratio greater than 1.0 indicates Kruskal's slower.
+
+### Conclusion
+
+Based on this experimental data, Prim's algorithm is the clear winner in terms of speed, executing significantly faster than Kruskal's algorithm across graphs of varying sizes and densities.
+
+The primary reason for Kruskal's poorer performance is the O(ElogE) initial cost associated with sorting all edges, which is a major bottleneck that prim's algorithm avoids by using a priority queue to dynamically manage only the frontier of the minimum spanning tree.
+
+
