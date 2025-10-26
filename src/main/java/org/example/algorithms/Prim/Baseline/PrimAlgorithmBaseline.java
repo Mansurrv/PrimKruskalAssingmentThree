@@ -1,81 +1,15 @@
-package org.example.algorithms.Prim;
+package org.example.algorithms.Prim.Baseline;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.*;
 
 public class PrimAlgorithmBaseline {
 
-    static class Node {
-        int id;
-        String label;
-    }
-
-    static class Edge {
-        int source;
-        int target;
-        int weight;
-    }
-
-    static class GraphData {
-        List<Node> nodes;
-        List<Edge> edges;
-    }
-
-    static class Root {
-        Map<String, Object> properties;
-        GraphData graph;
-    }
-
-    static class MSTEdge {
-        String from;
-        String to;
-        int weight;
-
-        MSTEdge(String from, String to, int weight) {
-            this.from = from;
-            this.to = to;
-            this.weight = weight;
-        }
-    }
-
-    static class PrimResult {
-        List<MSTEdge> mst_edges = new ArrayList<>();
-        int total_cost;
-        int operations_count;
-        double execution_time_ms;
-    }
-
-    static class InputStats {
-        int vertices;
-        int edges;
-    }
-
-    static class ResultWrapper {
-        int graph_id;
-        InputStats input_stats;
-        PrimResult prim_optimized;
-    }
-
-    static class Output {
-        List<ResultWrapper> results = new ArrayList<>();
-    }
-
-    static class Pair implements Comparable<Pair> {
-        int v, wt, parent;
-        Pair(int v, int wt, int parent) {
-            this.v = v;
-            this.wt = wt;
-            this.parent = parent;
-        }
-        public int compareTo(Pair that) {
-            return this.wt - that.wt;
-        }
-    }
-
-    PrimResult primOptimized(List<Node> nodes, List<Edge> edges) {
+    public PrimResult primOptimized(List<Node> nodes, List<Edge> edges) {
         long startTime = System.nanoTime();
 
         int V = nodes.size();
@@ -83,18 +17,15 @@ public class PrimAlgorithmBaseline {
         for (int i = 0; i < V; i++) adj.add(new ArrayList<>());
 
         Map<Integer, Integer> idToIndex = new HashMap<>();
-        for (int i = 0; i < nodes.size(); i++) {
-            idToIndex.put(nodes.get(i).id, i);
-        }
+        for (int i = 0; i < nodes.size(); i++) idToIndex.put(nodes.get(i).id, i);
 
         for (Edge e : edges) {
             Integer from = idToIndex.get(e.source);
             Integer to = idToIndex.get(e.target);
-            if (from == null || to == null) continue; // skip invalid references
+            if (from == null || to == null) continue;
             adj.get(from).add(new Pair(to, e.weight, from));
             adj.get(to).add(new Pair(from, e.weight, to));
         }
-
 
         PriorityQueue<Pair> pq = new PriorityQueue<>();
         boolean[] vis = new boolean[V];
@@ -146,21 +77,15 @@ public class PrimAlgorithmBaseline {
             Output output = new Output();
             PrimAlgorithmBaseline algorithm = new PrimAlgorithmBaseline();
 
-            int[][] ranges = {
-                    {1, 5},
-                    {6, 15},
-                    {16, 25},
-                    {26, 28}
-            };
-            String[] folders = {"small", "medium", "large", "extralarge"};
-            String[] prefixes = {"smallGraph_", "medium_", "large_", "extraLarge_"};
+            int[][] ranges = {{1,5},{6,15},{16,25},{26,28}};
+            String[] folders = {"small","medium","large","extralarge"};
+            String[] prefixes = {"smallGraph_","medium_","large_","extraLarge_"};
 
             for (int i = 0; i < ranges.length; i++) {
                 for (int graphId = ranges[i][0]; graphId <= ranges[i][1]; graphId++) {
                     String path = "graphs/" + folders[i] + "/" + prefixes[i] + graphId + ".json";
                     try (FileReader reader = new FileReader(path)) {
                         Root root = gson.fromJson(reader, Root.class);
-
                         PrimResult primResult = algorithm.primOptimized(root.graph.nodes, root.graph.edges);
 
                         InputStats stats = new InputStats();
@@ -183,7 +108,6 @@ public class PrimAlgorithmBaseline {
             }
 
             System.out.println("\nAll results saved");
-
         } catch (Exception e) {
             e.printStackTrace();
         }
