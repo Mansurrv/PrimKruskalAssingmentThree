@@ -1,4 +1,4 @@
-package org.example.algorithms.Prim;
+package org.example.algorithms.Prim.Optimized;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,63 +7,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.*;
 
+import org.example.algorithms.Prim.Optimized.*;
+
 public class PrimAlgorithmOptimized {
-
-    static class Node {
-        int id;
-        String label;
-    }
-
-    static class Edge {
-        int source;
-        int target;
-        int weight;
-    }
-
-    static class GraphData {
-        List<Node> nodes;
-        List<Edge> edges;
-    }
-
-    static class Root {
-        Map<String, Object> properties;
-        GraphData graph;
-    }
-
-    static class MSTEdge {
-        String from;
-        String to;
-        int weight;
-
-        MSTEdge(String from, String to, int weight) {
-            this.from = from;
-            this.to = to;
-            this.weight = weight;
-        }
-    }
-
-    static class PrimResult {
-        List<MSTEdge> mst_edges = new ArrayList<>();
-        int total_cost;
-        int operations_count;
-        double execution_time_ms;
-    }
-
-    static class InputStats {
-        int vertices;
-        int edges;
-    }
-
-    static class ResultWrapper {
-        int graph_id;
-        InputStats input_stats;
-        PrimResult prim;
-    }
-
-    static class Output {
-        List<ResultWrapper> results = new ArrayList<>();
-    }
-
     int min(int[] key, Boolean[] set, int[] operations) {
         int min = Integer.MAX_VALUE;
         int min_idx = -1;
