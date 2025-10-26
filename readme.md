@@ -100,6 +100,8 @@ Designing Local Area Networks where the goal is to connect all nodes with the fe
 
 Determining the minimum total distance of new roads or railway tracks required to link a set of towns or hubs.
 
+You can view the dataset here: [comparison_results](./compareResult/comparison_results.csv)
+
 ## Data Summary of comparisons
 
 The dataset includes runtime metrics across 28 graphs, ranging from small, sparse graphs to very large, dense graphs. 
